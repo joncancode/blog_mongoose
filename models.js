@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const blogSchema = mongoose.Schema({
   title: {type: String, required: true},
   author: {type: Object, required: true},
-  created: {type: String, required: false},
-  content: {type: String, required: true},
+  created: {type: Date, required: true},
+  content: {type: String, required: true}
 });
 
 
@@ -14,6 +14,7 @@ const blogSchema = mongoose.Schema({
 
 
 blogSchema.methods.apiRepr = function() {
+
 
   return {
     id: this._id,

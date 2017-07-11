@@ -8,6 +8,9 @@ const {PORT, DATABASE_URL} = require('./config');
 const {Blog} = require('./models');
 
 const app = express();
+
+
+
 app.use(bodyParser.json());
 
 // GET requests to /blogposts => return 10 blogposts
@@ -16,7 +19,7 @@ app.get('/blogposts', (req, res) => {
     .find()
     // we're limiting because restaurants db has > 25,000
     // documents, and that's too much to process/return
-    .limit(10)
+    .limit(40)
     // `exec` returns a promise
     .exec()
     // success callback: for each restaurant we got back, we'll
@@ -50,6 +53,7 @@ app.get('/blogposts/:id', (req, res) => {
     });
 });
 
+console.log(new Date())
 
 // POST requests
 app.post('/blogposts', (req, res) => {
@@ -77,6 +81,39 @@ app.post('/blogposts', (req, res) => {
       res.status(500).json({message: 'Internal server error'});
     });
 });
+
+app.put('/blogposts/:id', (req, res) => {
+  // ensure that the id in the request path and the one in request body match
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    const message = (
+      `Request path id (${req.params.id}) and request body id ` +
+      `(${req.body.id}) must match`);
+    console.error(message);
+    res.status(400).json({message: message});
+  }
+
+  // we only support a subset of fields being updateable.
+  // if the user sent over any of the updatableFields, we update those values
+  // in document
+  const toUpdate = {};
+  const updateableFields = ['title', 'author', 'content'];
+
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      toUpdate[field] = req.body[field];
+    }
+  });
+
+  Blog
+    // all key/value pairs in toUpdate will be updated -- that's what `$set` does
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .exec()
+    .then(blog => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+
+
 
 // run and close server
 let server;
