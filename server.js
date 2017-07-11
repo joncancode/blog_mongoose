@@ -52,8 +52,6 @@ app.get('/blogposts/:id', (req, res) => {
     });
 });
 
-console.log(new Date())
-
 // POST requests
 app.post('/blogposts', (req, res) => {
 
