@@ -38,7 +38,6 @@ app.get('/blogposts', (req, res) => {
     });
 });
 
-
 // can also request by ID
 app.get('/blogposts/:id', (req, res) => {
   Blog
@@ -112,6 +111,19 @@ app.put('/blogposts/:id', (req, res) => {
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
+// delete request
+app.delete('/blogposts/:id', (req, res) => {
+  Blog
+    .findByIdAndRemove(req.params.id)
+    .exec()
+    .then(blog => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+// catch-all endpoint if client makes request to non-existent endpoint
+app.use('*', function(req, res) {
+  res.status(404).json({message: 'Not Found'});
+});
 
 
 

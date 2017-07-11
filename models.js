@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const blogSchema = mongoose.Schema({
   title: {type: String, required: true},
   author: {type: Object, required: true},
-  created: {type: Date, required: true},
+  created: {type : Date, default: Date.now},
   content: {type: String, required: true}
 });
 
@@ -13,18 +13,22 @@ const blogSchema = mongoose.Schema({
 //virtual stuff
 
 
+blogSchema.virtual('authorName').get(function() {
+  return `${this.author.firstName} ${this.author.lastName}`; 
+});
+
+
 blogSchema.methods.apiRepr = function() {
 
 
   return {
     id: this._id,
     title: this.title,
-    author: this.author,
+    author: this.authorName,
     created: this.created,
     content: this.content,
   };
-}
-
+};
 
 const Blog = mongoose.model('Blog', blogSchema);
 
