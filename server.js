@@ -1,3 +1,5 @@
+//export DATABASE_URL='mongodb://dev:dev@ds155192.mlab.com:55192/mongoose'
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
